@@ -6,6 +6,7 @@ import io.reactiverse.awssdk.reactivestreams.ReadStreamPublisher;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.*;
+import io.vertx.core.net.ProxyOptions;
 import software.amazon.awssdk.http.SdkHttpFullResponse;
 import software.amazon.awssdk.http.SdkHttpRequest;
 import software.amazon.awssdk.http.SdkHttpResponse;
@@ -30,6 +31,14 @@ public class VertxNioAsyncHttpClient implements SdkAsyncHttpClient {
         HttpClientOptions options = new HttpClientOptions()
             .setSsl(true)
             .setKeepAlive(true);
+	String vertxProxyHostProp = System.getProperty("vertxProxyHost");
+	String vertxProxyPortProp = System.getProperty("vertxProxyPort");
+	if (vertxProxyHostProp != null && vertxProxyPortProp != null) {
+	    ProxyOptions proxyOptions = new ProxyOptions()
+		    .setHost(vertxProxyHostProp)
+		    .setPort(Integer.parseInt(vertxProxyPortProp));
+	    options.setProxyOptions(proxyOptions);
+	}
         return vertx.createHttpClient(options);
     }
 
